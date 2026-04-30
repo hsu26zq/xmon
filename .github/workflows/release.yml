@@ -24,10 +24,10 @@ jobs:
     - name: Build
       run: cmake --build build
 
-    - name: Verify binary exists
+    - name: Check binary exists
       run: ls -lah build/
 
-    - name: Create DEB structure
+    - name: Create DEB package
       run: |
         mkdir -p pkg/usr/local/bin
         mkdir -p pkg/DEBIAN
@@ -36,10 +36,12 @@ jobs:
 
         printf "Package: xmon\nVersion: 0.1\nSection: utils\nPriority: optional\nArchitecture: amd64\nMaintainer: xmon\nDescription: system monitor\n" > pkg/DEBIAN/control
 
-    - name: Build DEB
-      run: dpkg-deb --build pkg xmon.deb
+        dpkg-deb --build pkg xmon.deb
 
-    - name: Create GitHub Release
+    - name: Create GitHub Release + upload asset
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ github.ref_name }}
         files: xmon.deb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
