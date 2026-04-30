@@ -1,0 +1,14 @@
+    - name: Install packaging tools
+      run: sudo apt-get install -y dpkg-dev
+
+    - name: Package DEB
+      run: |
+        mkdir -p pkg/usr/local/bin
+        cp build/xmon pkg/usr/local/bin/
+        dpkg-deb --build pkg xmon.deb
+
+    - name: Upload DEB
+      uses: actions/upload-artifact@v4
+      with:
+        name: xmon-deb
+        path: xmon.deb
