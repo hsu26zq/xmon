@@ -1,0 +1,37 @@
+name: Release xmon
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y libncurses5-dev libncursesw5-dev dpkg-dev
+
+    - name: Build
+      run: |
+        cmake -B build
+        cmake --build build
+
+    - name: Create DEB
+      run: |
+        mkdir -p pkg/usr/local/bin
+        mkdir -p pkg/DEBIAN
+
+        cp build/xmon pkg/usr/local/bin/
+
+        printf "Package: xmon\nVersion: 0.1\nArchitecture: amd64\nMaintainer: xmon\nDescription: system monitor\n" > pkg/DEBIAN/control
+
+        dpkg-deb --build pkg xmon.deb
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: xmon.deb
