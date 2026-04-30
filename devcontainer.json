@@ -1,0 +1,19 @@
+{
+  "name": "xmon-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools"
+      ]
+    }
+  },
+  "workspaceFolder": "/workspaces/xmon",
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspaces/xmon,type=bind"
+  ],
+  "postCreateCommand": "cmake -S . -B build"
+}
