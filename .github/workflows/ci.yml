@@ -23,15 +23,30 @@ jobs:
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
+      run: cmake --build build
 
-    - name: Package DEB
+    # -------- DEB PACKAGING (TEMP ONLY) --------
+    - name: Create DEB package structure
       run: |
         mkdir -p pkg/usr/local/bin
-        cp build/xmon pkg/usr/local/bin/
-        dpkg-deb --build pkg xmon.deb
+        mkdir -p pkg/DEBIAN
 
-    - name: Upload DEB
+        cp build/xmon pkg/usr/local/bin/
+
+        cat > pkg/DEBIAN/control <<EOF
+Package: xmon
+Version: 0.1
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: xmon-dev
+Description: Linux system monitor (process/thread/memory TUI)
+EOF
+
+    - name: Build DEB
+      run: dpkg-deb --build pkg xmon.deb
+
+    - name: Upload DEB artifact
       uses: actions/upload-artifact@v4
       with:
         name: xmon-deb
